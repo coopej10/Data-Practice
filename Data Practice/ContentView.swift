@@ -12,20 +12,32 @@ struct ContentView: View {
     @Query private var friends: [Friend]
     @State private var newName = ""
     @State private var newBirthday = Date.now
+    @State private var selectedFriend: Friend?
     
     @Environment(\.modelContext) private var context
     
     var body: some View {
         
         NavigationStack {
-            List(friends) { friend in
-                HStack {
-                    Text(friend.name)
-                    Spacer()
-                    Text(friend.birthday, style: .date)
+            List {
+                ForEach(friends) { friend in
+                    HStack {
+                        Text(friend.name)
+                        Spacer()
+                        Text(friend.birthday, style: .date)
+                    }
+                .onTapGesture {
+                        selectedFriend = friend
+                        }
                 }
+                .onDelete(perform: deleteFriends)
             }
             .navigationTitle("Birthdays")
+            .sheet(item: $selectedFriend) { friend in
+            NavigationStack {
+                EditFriendView(friend: friend)
+                }
+            }
             .safeAreaInset(edge: .bottom) {
                 VStack(alignment: .center, spacing: 20) {
                     Text("New Birthday")
@@ -49,6 +61,12 @@ struct ContentView: View {
         }
             .padding()
         }
+    private func deleteFriends(at offsets: IndexSet) {
+           for index in offsets {
+               let friend = friends[index]
+               context.delete(friend)
+           }
+       }
     }
     
     #Preview {
