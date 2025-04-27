@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import SwiftData
 
+@Model
 class Friend {
     var name = ""
     var birthday: Date
@@ -15,6 +17,5 @@ class Friend {
         name = friendName
         birthday = friendDay
     }
-    
     
 }
